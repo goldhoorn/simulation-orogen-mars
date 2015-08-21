@@ -310,6 +310,8 @@ task_context "IMU" do
 
     output_port('pose_samples', '/base/samples/RigidBodyState').
         doc 'provides timestamped IMUReading samples containing the complete pose'
+    output_port('odometry_delta', '/base/samples/RigidBodyState').
+        doc 'Virtual odometry samples, like the pose but only delta-values.'
 end
 
 

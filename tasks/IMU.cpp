@@ -93,7 +93,7 @@ void IMU::stopHook()
 void IMU::update( double time )
 {
     if(!isRunning()) return; //Seems Plugin is set up but not active yet, we are not sure that we are initialized correctly so retuning
-    
+    base::samples::RigidBodyState last_rbs = rbs;
     rbs.time = getTime();
     rbs.sourceFrame = _imu_frame.value();
     rbs.targetFrame = _world_frame.value();
@@ -141,6 +141,13 @@ void IMU::update( double time )
     imusens.acc = control->nodes->getLinearAcceleration( node_id );
     imusens.gyro = control->nodes->getAngularVelocity( node_id);
     _calibrated_sensors.write( imusens );
+
+    base::samples::RigidBodyState delta_rbs = rbs;
+    delta_rbs.orientation = last_rbs.orientation.inverse() *  rbs.orientation;
+    delta_rbs.position = rbs.position - last_rbs.position;
+    delta_rbs.velocity = rbs.orientation * (rbs.velocity);
+    delta_rbs.position = rbs.orientation * (rbs.position - last_rbs.position);
+    _odometry_delta.write(delta_rbs);
 
 }
 
